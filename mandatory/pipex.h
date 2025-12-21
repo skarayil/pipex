@@ -5,39 +5,37 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/21 09:05:38 by skarayil          #+#    #+#             */
-/*   Updated: 2025/12/21 09:26:58 by skarayil         ###   ########.fr       */
+/*   Created: 2025/12/21 11:02:33 by skarayil          #+#    #+#             */
+/*   Updated: 2025/12/21 15:17:43 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# include <fcntl.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <sys/types.h>
-# include <sys/wait.h>
 # include <unistd.h>
 
+typedef struct s_files
+{
+	int		infile;
+	int		outfile;
+	int		tube[2];
+}			t_files;
 
 typedef struct s_pipex
 {
-	int tube[2];
-	int infile;
-	int outfile;
-	char **paths;
-	char **cmd_args;
-	char *cmd_path;
+	t_files	files;
+	char	**envp;
+	char	**paths;
+	char	**cmd_args;
+	char	*cmd_path;
 	pid_t	child_1;
 	pid_t	child_2;
 }			t_pipex;
 
-
-void		ft_infile(t_pipex pipex, char **argv, char **envp);
-void		ft_outfile(t_pipex pipex, char **argv, char **envp);
-void		error_msg(char *msg);
-void		execute(char *cmd, char **envp);
-char		*find_path(char *cmd, char **envp);
+void		ft_execute(char *cmd_str, t_pipex *pipex);
+void		ft_free(char **tab);
+void		ft_paths(t_pipex *p);
+void		ft_error(char *str);
 
 #endif
