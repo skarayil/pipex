@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/21 14:44:00 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/06 17:15:14 by skarayil         ###   ########.fr       */
+/*   Created: 2026/01/06 16:50:38 by skarayil          #+#    #+#             */
+/*   Updated: 2026/01/06 17:25:16 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,19 +37,6 @@ void	ft_free(char **tab)
 		i++;
 	}
 	free(tab);
-}
-
-static char	*ft_build_path(char *path, char *cmd)
-{
-	char	*temp;
-	char	*res;
-
-	temp = ft_strjoin(path, "/");
-	if (!temp)
-		return (NULL);
-	res = ft_strjoin(temp, cmd);
-	free(temp);
-	return (res);
 }
 
 void	ft_paths(t_pipex *p)

@@ -6,7 +6,7 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 13:00:49 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/06 16:47:06 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/06 17:15:02 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static void	ft_pipex(t_pipex *p, char **envp)
 
 int	main(int argc, char *av[], char **envp)
 {
-    t_pipex	p;
+	t_pipex	p;
 	int		status;
 
 	if (argc != 5)
