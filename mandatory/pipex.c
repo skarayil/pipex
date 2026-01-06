@@ -6,7 +6,7 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 13:00:49 by skarayil          #+#    #+#             */
-/*   Updated: 2025/12/21 15:17:59 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/06 16:11:21 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,9 @@
 static void	ft_child(t_pipex *p, int input_fd, int output_fd, char *cmd)
 {
 	if (dup2(input_fd, STDIN_FILENO) == -1)
-	{
-		perror("Dup2 Input Error");
-		exit(1);
-	}
+		ft_eerror("Dup2 Input Error", p);
 	if (dup2(output_fd, STDOUT_FILENO) == -1)
-	{
-		perror("Dup2 Output Error");
-		exit(1);
-	}
+		ft_eerror("Dup2 Output Error", p);
 	close(p->files.tube[0]);
 	close(p->files.tube[1]);
 	if (p->files.infile > -1)
@@ -44,13 +38,14 @@ static void	ft_infile(t_pipex *p, char *av[])
 		perror(av[1]);
 		close(p->files.tube[0]);
 		close(p->files.tube[1]);
-		ft_free(p->paths);
+		if (p->paths)
+			ft_free(p->paths);
 		exit(1);
 	}
 	ft_child(p, p->files.infile, p->files.tube[1], av[2]);
 }
 
-static void ft_outfile(t_pipex *p, char *av[])
+static void	ft_outfile(t_pipex *p, char *av[])
 {
 	p->files.outfile = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (p->files.outfile < 0)
@@ -58,7 +53,8 @@ static void ft_outfile(t_pipex *p, char *av[])
 		perror(av[4]);
 		close(p->files.tube[0]);
 		close(p->files.tube[1]);
-		ft_free(p->paths);
+		if (p->paths)
+			ft_free(p->paths);
 		exit(1);
 	}
 	ft_child(p, p->files.tube[0], p->files.outfile, av[3]);
@@ -71,12 +67,12 @@ static void	ft_pipex(t_pipex *p, char **envp)
 	p->files.outfile = -1;
 	ft_paths(p);
 	if (pipe(p->files.tube) == -1)
-		ft_error("Pipe Error");
+		ft_eerror("Pipe Error", p);
 }
 
 int	main(int argc, char *av[], char **envp)
 {
-	t_pipex	p;
+    t_pipex	p;
 	int		status;
 
 	if (argc != 5)
@@ -84,19 +80,20 @@ int	main(int argc, char *av[], char **envp)
 	ft_pipex(&p, envp);
 	p.child_1 = fork();
 	if (p.child_1 == -1)
-		ft_error("Fork Error");
+		ft_eerror("Fork Error", &p);
 	if (p.child_1 == 0)
 		ft_infile(&p, av);
 	p.child_2 = fork();
 	if (p.child_2 == -1)
-		ft_error("Fork Error");
+		ft_eerror("Fork Error", &p);
 	if (p.child_2 == 0)
 		ft_outfile(&p, av);
 	close(p.files.tube[0]);
 	close(p.files.tube[1]);
 	waitpid(p.child_1, NULL, 0);
 	waitpid(p.child_2, &status, 0);
-	ft_free(p.paths);
+	if (p.paths)
+		ft_free(p.paths);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 14:44:00 by skarayil          #+#    #+#             */
-/*   Updated: 2025/12/21 15:17:33 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/06 16:09:05 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
-void	ft_error(char *str)
+void	ft_eerror(char *str, t_pipex *p)
 {
 	perror(str);
+	if (p && p->paths)
+		ft_free(p->paths);
 	exit(1);
 }
 
@@ -37,24 +39,17 @@ void	ft_free(char **tab)
 	free(tab);
 }
 
-char	*find_path(char *cmd, char **env_paths)
+static char	*ft_build_path(char *path, char *cmd)
 {
 	char	*temp;
-	char	*final_path;
-	int		i;
+	char	*res;
 
-	i = 0;
-	while (env_paths && env_paths[i])
-	{
-		temp = ft_strjoin(env_paths[i], "/");
-		final_path = ft_strjoin(temp, cmd);
-		free(temp);
-		if (access(final_path, F_OK | X_OK) == 0)
-			return (final_path);
-		free(final_path);
-		i++;
-	}
-	return (NULL);
+	temp = ft_strjoin(path, "/");
+	if (!temp)
+		return (NULL);
+	res = ft_strjoin(temp, cmd);
+	free(temp);
+	return (res);
 }
 
 void	ft_paths(t_pipex *p)
@@ -63,6 +58,12 @@ void	ft_paths(t_pipex *p)
 
 	i = 0;
 	p->paths = NULL;
+	if (!p->envp || !*p->envp)
+	{
+		p->paths = ft_split("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin",
+				':');
+		return ;
+	}
 	while (p->envp[i])
 	{
 		if (ft_strncmp(p->envp[i], "PATH=", 5) == 0)
@@ -78,23 +79,25 @@ void	ft_execute(char *argv, t_pipex *p)
 {
 	char	**cmd;
 	char	*path;
+	int		i;
 
 	cmd = ft_split(argv, ' ');
 	if (!cmd || !cmd[0])
 	{
 		ft_free(cmd);
-		ft_error("Command not found");
+		ft_eerror("Command empty", p);
 	}
-	if (cmd[0][0] == '/' && access(cmd[0], X_OK) == 0)
-		path = cmd[0];
-	else
-		path = find_path(cmd[0], p->paths);
-	if (!path)
+	if (ft_strchr(cmd[0], '/') && execve(cmd[0], cmd, p->envp) == -1)
+		(ft_free(cmd), ft_eerror("Execve Error", p));
+	i = -1;
+	while (p->paths && p->paths[++i])
 	{
-		ft_free(cmd);
-		write(2, "Command not found\n", 18);
-		exit(127);
+		path = ft_build_path(p->paths[i], cmd[0]);
+		execve(path, cmd, p->envp);
+		free(path);
 	}
-	if (execve(path, cmd, p->envp) == -1)
-		ft_error("Execve Error");
+	ft_free(cmd);
+	if (p->paths)
+		ft_free(p->paths);
+	(write(2, "Command not found\n", 18), exit(127));
 }
