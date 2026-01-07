@@ -6,12 +6,13 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 13:00:49 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/07 12:45:07 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/07 12:57:23 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <fcntl.h>
+#include <sys/wait.h>
 
 static void	ft_child(t_pipex *p, int input_fd, int output_fd, char *cmd)
 {

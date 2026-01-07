@@ -62,7 +62,7 @@ clean:
 	fi
 
 fclean: clean
-	@rm -f $(NAME) $(BONUS_NAME)
+	@rm -f $(NAME) $(BONUS_NAME) $(OBJ_DIR)
 	@make -C $(LIBFT_DIR) fclean > /dev/null 2>&1
 	@if [ -f "$(BONUS_DIR)/Makefile" ]; then \
 		make -C $(BONUS_DIR) fclean > /dev/null 2>&1; \

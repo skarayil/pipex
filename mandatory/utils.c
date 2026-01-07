@@ -6,12 +6,11 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 14:44:00 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/07 12:45:02 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/07 13:16:29 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <sys/wait.h>
 
 void	ft_eerror(char *str, t_pipex *p)
 {
