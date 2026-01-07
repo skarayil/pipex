@@ -1,49 +1,71 @@
-LIBFT_DIR       = library/libft
-MANDATORY_DIR   = mandatory
-BONUS_DIR       = bonus
+NAME        = pipex
+BONUS_NAME  = pipex_bonus
 
-CC              = clang
-CFLAGS          = -Wall -Wextra -Werror
-INCLUDES        = -I$(MANDATORY_DIR) -I$(LIBFT_DIR)
+CC          = clang
+CFLAGS      = -Wall -Wextra -Werror
+INCLUDES    = -I./mandatory -I./library/libft -I./library/get_next_line -I./bonus
 
-MANDATORY_SRCS  = $(MANDATORY_DIR)/pipex.c \
-                  $(MANDATORY_DIR)/utils.c
+SRC_DIR     = mandatory
+BONUS_DIR   = bonus
+OBJ_DIR     = objects
+BONUS_OBJ_DIR = objects_bonus
 
-MANDATORY_OBJS  = $(MANDATORY_SRCS:.c=.o)
+LIBFT_DIR   = library/libft
+LIBFT       = $(LIBFT_DIR)/libft.a
 
-NAME            = pipex
-LIBFT           = $(LIBFT_DIR)/libft.a
+GNL_DIR     = library/get_next_line
+GNL_SRC     = $(GNL_DIR)/get_next_line.c $(GNL_DIR)/get_next_line_utils.c
+GNL_OBJ     = $(GNL_SRC:$(GNL_DIR)/%.c=$(BONUS_OBJ_DIR)/%.o)
 
-.SILENT:
+SRCS        = $(SRC_DIR)/pipex.c \
+              $(SRC_DIR)/utils.c
+
+BONUS_SRCS  = $(BONUS_DIR)/pipex_bonus.c \
+              $(BONUS_DIR)/utils_bonus.c
+
+OBJS        = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+BONUS_OBJS  = $(BONUS_SRCS:$(BONUS_DIR)/%.c=$(BONUS_OBJ_DIR)/%.o)
 
 all: $(LIBFT) $(NAME)
 
-$(NAME): $(MANDATORY_OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(INCLUDES) $(MANDATORY_OBJS) $(LIBFT) -o $(NAME)
-
-%.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+$(NAME): $(OBJS) $(LIBFT)
+	@mkdir -p $(OBJ_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(LIBFT) -o $(NAME)
 
 $(LIBFT):
-	make -sC $(LIBFT_DIR)
+	@make -C $(LIBFT_DIR) > /dev/null 2>&1
 
-bonus: all
-	if [ -f "$(BONUS_DIR)/Makefile" ]; then \
-		make -sC $(BONUS_DIR); \
+bonus: $(LIBFT) $(BONUS_OBJS)
+	@if [ -f "$(BONUS_DIR)/Makefile" ]; then \
+		make -C $(BONUS_DIR) > /dev/null 2>&1; \
+	else \
+		$(CC) $(CFLAGS) $(INCLUDES) $(BONUS_OBJS) $(LIBFT) -o $(BONUS_NAME); \
 	fi
 
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(BONUS_OBJ_DIR)/%.o: $(BONUS_DIR)/%.c
+	@mkdir -p $(BONUS_OBJ_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(BONUS_OBJ_DIR)/%.o: $(GNL_DIR)/%.c
+	@mkdir -p $(BONUS_OBJ_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -I$(GNL_DIR) -c $< -o $@
+
 clean:
-	rm -f $(MANDATORY_OBJS)
-	make -sC $(LIBFT_DIR) clean
-	if [ -f "$(BONUS_DIR)/Makefile" ]; then \
-		make -sC $(BONUS_DIR) clean; \
+	@rm -f $(OBJS) $(BONUS_OBJS)
+	@make -C $(LIBFT_DIR) clean > /dev/null 2>&1
+	@if [ -f "$(BONUS_DIR)/Makefile" ]; then \
+		make -C $(BONUS_DIR) clean > /dev/null 2>&1; \
 	fi
 
 fclean: clean
-	rm -f $(NAME)
-	make -sC $(LIBFT_DIR) fclean
-	if [ -f "$(BONUS_DIR)/Makefile" ]; then \
-		make -sC $(BONUS_DIR) fclean; \
+	@rm -f $(NAME) $(BONUS_NAME)
+	@make -C $(LIBFT_DIR) fclean > /dev/null 2>&1
+	@if [ -f "$(BONUS_DIR)/Makefile" ]; then \
+		make -C $(BONUS_DIR) fclean > /dev/null 2>&1; \
 	fi
 
 re: fclean all

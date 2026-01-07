@@ -6,14 +6,27 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 11:02:33 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/06 17:15:09 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/07 12:46:50 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
+# include "../library/libft/libft.h"
+# include <stdio.h>
+# include <stdlib.h>
 # include <unistd.h>
+
+# define ERR_INPUT "Invalid number of arguments.\n"
+# define ERR_CMD "Command not found\n"
+# define ERR_EMPTY "Empty command\n"
+# define ERR_INFILE "Infile\n"
+# define ERR_OUTFILE "Outfile\n"
+# define ERR_EXECVE "Execve\n"
+# define ERR_PIPE "Pipe\n"
+# define ERR_FORK "Fork\n"
+# define ERR_DUP "Dup2\n"
 
 typedef struct s_files
 {

@@ -6,21 +6,19 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 13:00:49 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/06 17:15:02 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/07 12:45:07 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 static void	ft_child(t_pipex *p, int input_fd, int output_fd, char *cmd)
 {
 	if (dup2(input_fd, STDIN_FILENO) == -1)
-		ft_eerror("Dup2 Input Error", p);
+		ft_eerror(ERR_DUP, p);
 	if (dup2(output_fd, STDOUT_FILENO) == -1)
-		ft_eerror("Dup2 Output Error", p);
+		ft_eerror(ERR_DUP, p);
 	close(p->files.tube[0]);
 	close(p->files.tube[1]);
 	if (p->files.infile > -1)
@@ -67,25 +65,25 @@ static void	ft_pipex(t_pipex *p, char **envp)
 	p->files.outfile = -1;
 	ft_paths(p);
 	if (pipe(p->files.tube) == -1)
-		ft_eerror("Pipe Error", p);
+		ft_eerror(ERR_PIPE, p);
 }
 
-int	main(int argc, char *av[], char **envp)
+int	main(int ac, char *av[], char **envp)
 {
 	t_pipex	p;
 	int		status;
 
-	if (argc != 5)
-		return (write(2, "Usage: ./pipex infile cmd1 cmd2 outfile\n", 40), 1);
+	if (ac != 5)
+		return (write(2, ERR_INPUT, ft_strlen(ERR_INPUT)), 1);
 	ft_pipex(&p, envp);
 	p.child_1 = fork();
 	if (p.child_1 == -1)
-		ft_eerror("Fork Error", &p);
+		ft_eerror(ERR_FORK, &p);
 	if (p.child_1 == 0)
 		ft_infile(&p, av);
 	p.child_2 = fork();
 	if (p.child_2 == -1)
-		ft_eerror("Fork Error", &p);
+		ft_eerror(ERR_FORK, &p);
 	if (p.child_2 == 0)
 		ft_outfile(&p, av);
 	close(p.files.tube[0]);

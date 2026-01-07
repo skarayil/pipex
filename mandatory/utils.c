@@ -6,14 +6,11 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 14:44:00 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/06 17:15:14 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/07 12:45:02 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../library/libft/libft.h"
 #include "pipex.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/wait.h>
 
 void	ft_eerror(char *str, t_pipex *p)
@@ -41,14 +38,16 @@ void	ft_free(char **tab)
 
 static char	*ft_build_path(char *path, char *cmd)
 {
-	char	*temp;
 	char	*res;
+	size_t	len;
 
-	temp = ft_strjoin(path, "/");
-	if (!temp)
+	len = ft_strlen(path) + ft_strlen(cmd) + 2;
+	res = malloc(sizeof(char) * len);
+	if (!res)
 		return (NULL);
-	res = ft_strjoin(temp, cmd);
-	free(temp);
+	ft_strlcpy(res, path, len);
+	ft_strlcat(res, "/", len);
+	ft_strlcat(res, cmd, len);
 	return (res);
 }
 
@@ -85,10 +84,10 @@ void	ft_execute(char *argv, t_pipex *p)
 	if (!cmd || !cmd[0])
 	{
 		ft_free(cmd);
-		ft_eerror("Command empty", p);
+		ft_eerror(ERR_EMPTY, p);
 	}
 	if (ft_strchr(cmd[0], '/') && execve(cmd[0], cmd, p->envp) == -1)
-		(ft_free(cmd), ft_eerror("Execve Error", p));
+		(ft_free(cmd), ft_eerror(ERR_EXECVE, p));
 	i = -1;
 	while (p->paths && p->paths[++i])
 	{
@@ -99,5 +98,6 @@ void	ft_execute(char *argv, t_pipex *p)
 	ft_free(cmd);
 	if (p->paths)
 		ft_free(p->paths);
-	(write(2, "Command not found\n", 18), exit(127));
+	write(2, ERR_CMD, ft_strlen(ERR_CMD));
+	exit(127);
 }
