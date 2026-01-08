@@ -6,15 +6,15 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 14:44:00 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/07 13:16:29 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/08 09:26:44 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	ft_eerror(char *str, t_pipex *p)
+void	ft_eerror(char *msg, t_pipex *p)
 {
-	perror(str);
+	perror(msg);
 	if (p && p->paths)
 		ft_free(p->paths);
 	exit(1);
