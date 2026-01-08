@@ -6,7 +6,7 @@
 /*   By: skarayil <skarayil@student.42kocaeli>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 20:19:41 by skarayil          #+#    #+#             */
-/*   Updated: 2026/01/08 09:24:46 by skarayil         ###   ########.fr       */
+/*   Updated: 2026/01/08 09:33:54 by skarayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	ft_heredoc(t_pipex *p)
 	close(fd[0]);
 }
 
-static void	ft_open_infile(t_pipex *p)
+static void	ft_open(t_pipex *p)
 {
 	p->io.infile = open(p->av[1], O_RDONLY);
 	if (p->io.infile == -1)
@@ -73,6 +73,6 @@ void	ft_check(t_pipex *p, int *i, int *mode)
 		p->io.heredoc = 0;
 		*i = 2;
 		*mode = O_WRONLY | O_CREAT | O_TRUNC;
-		ft_open_infile(p);
+		ft_open(p);
 	}
 }
